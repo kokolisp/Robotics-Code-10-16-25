@@ -1,74 +1,76 @@
-#include <kipr/wombat.h>
-// Declaring variables
-int lmotor = 3;
-int rmotor = 0;
-int lspeed = 70;
-int rspeed = 100;
-int lltspeed = -42;
-int rltspeed = 54;
-int pausetime = 290;
-int fortime = 500;
-int fsensor = 0;
-int rsensor = 1;
-//FUNCTION DEFINITIONS
-void forward()
-{
-    printf("MOVING FORWARD\n");
-    motor(rmotor,rspeed);
-    motor(lmotor,lspeed);
+#include <kipr/wombat.h> 
+// Declaring variables 
+int lmotor = 3; 
+int rmotor = 0; 
+int lspeed = 70; 
+int rspeed = 100; 
+int lltspeed = -42; 
+int rltspeed = 54; 
+int pausetime = 290; 
+int fortime = 500; 
+int fsensor = 0; 
+int rsensor = 1; 
+int fwall = 2780; 
+int lowlimit = 2800; 
+int highlimit = 2820; 
+int adjustbig = 100; 
+int adjustsmall = 65; 
+int savetime = 200; 
+//FUNCTION DEFINITIONS 
+void forward() { 
+printf("MOVING FORWARD\n"); 
+motor(rmotor,rspeed); 
+motor(lmotor,lspeed); 
+} 
+void uforward() { 
+printf("MOVING UFORWARD\n"); 
+motor(rmotor,rspeed); 
+motor(lmotor,lspeed); 
+msleep(fortime); 
+ao(); 
+} 
+void lturn() { 
+printf("TURNING LEFT\n"); 
+motor(rmotor,rltspeed); 
+motor(lmotor,lltspeed); 
+msleep(pausetime); 
+ao(); 
+} 
+void alturn() { 
+printf("ADVANCED LEFT\n"); 
+lturn(); 
+msleep(savetime); 
+uforward(); 
+msleep(savetime); 
+lturn(); 
+msleep(savetime); 
+lturn(); 
+msleep(savetime); 
+} 
+// BIG FUNCTION 
+void navigate() { 
+printf("rsensor\n"); 
+while(analog(fsensor)<=fwall) { 
+printf("nobump\n"); 
+forward(); 
+if(analog(rsensor)<=lowlimit) // if too far
+{ 
+lspeed=adjustbig; 
+rspeed=adjustsmall; 
+printf("too far\n"); 
+} 
+if(analog(rsensor)>=highlimit) // if too close
+{ 
+lspeed=adjustsmall; 
+rspeed=adjustbig; 
+printf("too close\n"); 
+} 
+} 
+} 
+int main() { 
+navigate(); 
+alturn(); 
+navigate(); 
+return 0; 
 }
-void uforward()
-{
-    printf("MOVING UFORWARD\n");
-    motor(rmotor,rspeed);
-    motor(lmotor,lspeed);
-    msleep(fortime);
-	ao();
-}
-void lturn()
-{
-    printf("TURNING LEFT\n");
-    motor(rmotor,rltspeed);
-    motor(lmotor,lltspeed);
-    msleep(pausetime);
-    ao();
-}
-void alturn()
-{
-    printf("ADVANCED LEFT\n");
-    lturn();
-    uforward();
-    lturn();
-    lturn();
-    lturn();
-}
-    
-// BIG FUNCTION
-void navigate()
-{
-    printf("rsensor\n");
-    while(analog(fsensor)<=2780)
-    {
-         printf("nobump\n");
-         forward();
-         if(analog(rsensor)<=2800) //if the button in port 0 is being pressed
-   		 {
-       		 lspeed=100;
-             rspeed=65;
-             printf("too far\n");
- 	     }
-         if(analog(rsensor)>=2820) //if the button in port 0 is being pressed
-   		 {
-       		 lspeed=65;
-             rspeed=100;
-             printf("too close\n");
- 	     }
-    }
-}
-int main()
-{
-     navigate();
-     alturn();
-     navigate();
-     return 0;
-}
+
